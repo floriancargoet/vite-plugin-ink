@@ -2,8 +2,10 @@ import path from "node:path";
 import fs from "node:fs";
 import EventEmitter from "node:events";
 
-import { Compiler, CompilerOptions } from "inkjs";
+import inkjs from "inkjs";
 import type { PluginOption } from "vite";
+
+const { Compiler, CompilerOptions } = inkjs;
 
 class Tracker {
   // Track dependencies of main ink files for hot reloading
