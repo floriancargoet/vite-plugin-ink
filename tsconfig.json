@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "skipLibCheck": true,
+    "module": "NodeNext",
+    "target": "ESNext",
+    "moduleResolution": "Node16",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "types": ["node", "vite"],
+    "outDir": "dist",
+    "declaration": true,
+
+    /* Linting */
+    "strict": true
+  },
+  "include": ["src"]
+}
