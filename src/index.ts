@@ -64,7 +64,24 @@ export function ink(): PluginOption {
 function generateStoryModule(storyData: string) {
   // Importing from inkjs/engine/Story breaks the production build so we import from a pre-bundled ink (engine only, no compiler)
   return `import { Story } from "inkjs/dist/ink-es6";
-export default new Story(${storyData});
+const story = new Story(${storyData});
+
+let _callback;
+function onHotReload(callback) {
+  _callback = callback;
+}
+
+export default story;
+export { story, onHotReload };
+
+// Self accepting hot reload
+if (import.meta.hot) {
+  import.meta.hot.accept((module) => {
+    if (!module || typeof _callback !== "function") return;
+    module.onHotReload(_callback);
+    _callback(module.story);
+  })
+}
 `;
 }
 

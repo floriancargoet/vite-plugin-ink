@@ -3,7 +3,7 @@
   "private": true,
   "author": "Florian Cargoët",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,6 +13,6 @@
   "devDependencies": {
     "inkjs": "2.2.2",
     "vite": "5.0.0",
-    "vite-plugin-ink": "0.0.3"
+    "vite-plugin-ink": "0.1.0"
   }
 }

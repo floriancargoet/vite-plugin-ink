@@ -32,18 +32,25 @@ You can tell it by adding a `ink-env.d.ts` file in your `src/` folder:
 
 (you can also add this line to the existing `vite-env.d.ts`.)
 
+## Importing a story
+
+```
+import story from "./story.ink"; // default import
+// OR
+import { story } from "./story.ink"; // named import
+```
+
 ## Hot reload
 
 To accept hot-reload updates in your application:
 
 ```
-import story from "./story.ink";
+import { story, onHotReload } from "./story.ink";
 
-if (import.meta.hot) {
-  import.meta.hot.accept("./story.ink", (mod) => {
-    const story = mod?.default;
-    // Do something with the new story!
-    // Recommended: reset the DOM and replay old choices on the new story
-  });
-}
+onHotReload((newStory) => {
+  // Do something with the new story!
+  // Recommended: reset the DOM and replay old choices on the new story
+})
 ```
+
+You'll find a minimal project with hot reloading in the `examples/` directory.

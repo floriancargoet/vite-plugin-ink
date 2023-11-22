@@ -1,20 +1,16 @@
-import story from "./story.ink";
+import { story, onHotReload } from "./story.ink";
 
 const storyContainer = document.querySelector("#story");
 
 // Setup hot-reloading.
 // Store choices to replay them after hot-reloading
 let choiceSequenceToRecord = [];
-if (import.meta.hot) {
-  import.meta.hot.accept("./story.ink", (module) => {
-    if (!module) return;
-    const newStory = module.default;
-    const choiceSequenceToReplay = [...choiceSequenceToRecord];
-    choiceSequenceToRecord = []; // Reset since this new run will fill it again
-    storyContainer.innerHTML = "";
-    continueStory(newStory, choiceSequenceToReplay);
-  });
-}
+onHotReload((newStory) => {
+  const choiceSequenceToReplay = [...choiceSequenceToRecord];
+  choiceSequenceToRecord = []; // Reset since this new run will fill it again
+  storyContainer.innerHTML = "";
+  continueStory(newStory, choiceSequenceToReplay);
+});
 
 // Start the story
 continueStory(story, []);
