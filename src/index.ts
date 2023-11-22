@@ -77,7 +77,10 @@ export { story, onHotReload };
 // Self accepting hot reload
 if (import.meta.hot) {
   import.meta.hot.accept((module) => {
-    if (!module || typeof _callback !== "function") return;
+    if (!module || typeof _callback !== "function") {
+      import.meta.hot.invalidate("You can avoid full reloads by providing a callback to onHotReload. See https://github.com/floriancargoet/vite-plugin-ink/#hot-reload");
+      return;
+    }
     module.onHotReload(_callback);
     _callback(module.story);
   })
