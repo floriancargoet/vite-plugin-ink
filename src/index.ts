@@ -76,13 +76,19 @@ export { story, onHotReload };
 
 // Self accepting hot reload
 if (import.meta.hot) {
+  let prevModule;
   import.meta.hot.accept((module) => {
     if (!module || typeof _callback !== "function") {
       import.meta.hot.invalidate("You can avoid full reloads by providing a callback to onHotReload. See https://github.com/floriancargoet/vite-plugin-ink/#hot-reload");
       return;
     }
-    module.onHotReload(_callback);
-    _callback(module.story);
+    // Hot reload sometimes fires multiple times with the exact same module instance (e.g. when saving a multiple files project from Inky)
+    // We don't want to invoke the callback with the same story instance since it has already been initialized.
+    if (prevModule !== module) {
+      prevModule = module;
+      module.onHotReload(_callback);
+      _callback(module.story);
+    }
   })
 }
 `;
