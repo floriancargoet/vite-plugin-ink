@@ -2,10 +2,8 @@ import path from "node:path";
 import fs from "node:fs";
 import EventEmitter from "node:events";
 
-import inkjs from "inkjs";
+import { Compiler, CompilerOptions } from "inkjs/full";
 import type { PluginOption } from "vite";
-
-const { Compiler, CompilerOptions } = inkjs;
 
 class Tracker {
   // Track dependencies of main ink files for hot reloading
@@ -62,8 +60,7 @@ export function ink(): PluginOption {
 }
 
 function generateStoryModule(storyData: string) {
-  // Importing from inkjs/engine/Story breaks the production build so we import from a pre-bundled ink (engine only, no compiler)
-  return `import { Story } from "inkjs/dist/ink-es6";
+  return `import { Story } from "inkjs";
 const story = new Story(${storyData});
 
 let _callback;

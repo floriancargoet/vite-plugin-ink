@@ -37,7 +37,7 @@
     "inkjs": "*"
   },
   "devDependencies": {
-    "inkjs": "2.2.2",
+    "inkjs": "2.2.4",
     "@types/node": "20.9.4",
     "typescript": "5.3.2",
     "vite": "5.0.2"
