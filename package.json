@@ -34,7 +34,7 @@
     "postversion": "git push && git push --tags"
   },
   "peerDependencies": {
-    "inkjs": "*"
+    "inkjs": "2.2.2"
   },
   "devDependencies": {
     "inkjs": "2.2.2",
