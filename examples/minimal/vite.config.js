@@ -1,4 +1,4 @@
-import { ink } from "vite-plugin-ink";
+import { ink } from "../..";
 
 export default {
   plugins: [ink()],

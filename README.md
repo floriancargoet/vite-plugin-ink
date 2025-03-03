@@ -5,7 +5,7 @@ A Vite plugin to compile and hot-reload Inkle's ink files
 ## Installation
 
 ```
-npm install -save-dev vite-plugin-ink
+npm install --save-dev vite-plugin-ink
 ```
 
 ## Vite configuration
@@ -27,7 +27,7 @@ TypeScript doesn't know that `.ink` files export a Story.
 You can tell it by adding a `ink-env.d.ts` file in your `src/` folder:
 
 ```
-/// <reference types="vite-plugin-ink/client" />
+/// <reference types="vite-plugin-ink/global" />
 ```
 
 (you can also add this line to the existing `vite-env.d.ts`.)

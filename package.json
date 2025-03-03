@@ -23,7 +23,7 @@
         "default": "./dist/index.js"
       }
     },
-    "./client": {
+    "./global": {
       "types": "./ink.d.ts"
     }
   },
@@ -37,12 +37,12 @@
     "postversion": "git push && git push --tags"
   },
   "peerDependencies": {
-    "inkjs": "2.2.2"
+    "inkjs": "2.3.1"
   },
   "devDependencies": {
-    "inkjs": "2.2.2",
-    "@types/node": "20.9.4",
-    "typescript": "5.3.2",
-    "vite": "5.0.2"
+    "@types/node": "22.13.9",
+    "inkjs": "2.3.1",
+    "typescript": "5.8.2",
+    "vite": "6.2.0"
   }
 }
