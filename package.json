@@ -33,8 +33,9 @@
   ],
   "scripts": {
     "build": "rm -rf dist; tsc",
-    "version": "npm run build && git add -A .",
-    "postversion": "git push && git push --tags"
+    "local-alpha": "NO_GIT=1 npm --no-git-tag-version version prerelease --preid=alpha && npm pack",
+    "version": "npm run build && if [ \"$NO_GIT\" != 1 ]; then git add -A . ; fi",
+    "postversion": "if [ \"$NO_GIT\" != 1 ]; then git push && git push --tags ; fi"
   },
   "peerDependencies": {
     "inkjs": "2.3.1"

@@ -35,14 +35,26 @@ class Tracker {
 
 const inkTracker = new Tracker();
 
+type TemplateEngine = Record<
+  string,
+  (fileName: string, source: string) => string
+>;
+type Options = {
+  templateEngine?: TemplateEngine;
+};
 // The Vite plugin
-export function ink(): PluginOption {
+export function ink(options: Options = {}): PluginOption {
   return {
     name: "vite-plugin-ink",
     // Transform imported ink files into JS modules that export an instance of Story.
     transform(source, fileName) {
       if (fileName.endsWith(".ink")) {
-        const storyJSON = compileInkToJSONString(fileName, this, inkTracker);
+        const storyJSON = compileInkToJSONString(
+          fileName,
+          this,
+          inkTracker,
+          options.templateEngine
+        );
         if (!storyJSON) return;
         return generateStoryModule(storyJSON);
       }
@@ -104,12 +116,13 @@ type Reporter = Record<(typeof logTypes)[number], (message: string) => void>;
 function compileInkToJSONString(
   inkPath: string,
   reporter: Reporter,
-  tracker: Tracker
+  tracker: Tracker,
+  templateEngine?: TemplateEngine
 ) {
   // Remove all tracked files so that we don't keep old dependencies.
   tracker.clear(inkPath);
   // A file handler to resolve ink INCLUDEs
-  const fileHandler = new InkFileHandler(inkPath);
+  const fileHandler = new InkFileHandler(inkPath, templateEngine);
   // We want to track those INCLUDEs for hot reloading.
   fileHandler.on("dependency", (dep) => tracker.track(inkPath, dep));
 
@@ -130,10 +143,13 @@ function compileInkToJSONString(
 class InkFileHandler extends EventEmitter {
   mainFilePath: string;
   rootPath: string;
-  constructor(mainFilePath = "") {
+  templateEngine: TemplateEngine;
+
+  constructor(mainFilePath = "", templateEngine: TemplateEngine = {}) {
     super();
     this.rootPath = path.dirname(mainFilePath);
     this.mainFilePath = mainFilePath;
+    this.templateEngine = templateEngine;
   }
   ResolveInkFilename(fileName: string) {
     const resolved = path.resolve(this.rootPath, fileName);
@@ -143,6 +159,18 @@ class InkFileHandler extends EventEmitter {
     return resolved;
   }
   LoadInkFileContents(fileName: string) {
-    return fs.readFileSync(fileName, "utf-8");
+    const ext = getExtension(fileName);
+    const source = fs.readFileSync(fileName, "utf-8");
+    if (ext && ext in this.templateEngine) {
+      return this.templateEngine[ext](fileName, source);
+    }
+    return source;
+  }
+}
+
+function getExtension(fileName: string) {
+  const parts = fileName.split(".");
+  if (parts.length > 0) {
+    return parts[parts.length - 1];
   }
 }
