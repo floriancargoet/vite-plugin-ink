@@ -73,8 +73,7 @@ export function ink(options: Options = {}): PluginOption {
 }
 
 function generateStoryModule(storyData: string) {
-  // Importing from inkjs/engine/Story breaks the production build so we import from a pre-bundled ink (engine only, no compiler)
-  return `import { Story } from "inkjs/full";
+  return `import { Story } from "inkjs/engine/Story";
 const story = new Story(${storyData});
 
 let _callback;
