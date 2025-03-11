@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-ink",
   "type": "module",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A Vite plugin to compile and hot-reload Inkle's ink files",
   "author": "Florian Cargoët",
   "license": "MIT",
