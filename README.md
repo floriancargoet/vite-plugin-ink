@@ -27,7 +27,7 @@ TypeScript doesn't know that `.ink` files export a Story.
 You can tell it by adding a `ink-env.d.ts` file in your `src/` folder:
 
 ```
-/// <reference types="vite-plugin-ink/global" />
+/// <reference types="vite-plugin-ink/ink" />
 ```
 
 (you can also add this line to the existing `vite-env.d.ts`.)
