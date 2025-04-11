@@ -38,12 +38,12 @@
     "postversion": "if [ \"$NO_GIT\" != 1 ]; then git push && git push --tags ; fi"
   },
   "peerDependencies": {
-    "inkjs": "2.3.1"
+    "inkjs": "2.3.2"
   },
   "devDependencies": {
-    "@types/node": "22.13.9",
-    "inkjs": "2.3.1",
-    "typescript": "5.8.2",
-    "vite": "6.2.0"
+    "@types/node": "22.14.0",
+    "inkjs": "2.3.2",
+    "typescript": "5.8.3",
+    "vite": "6.2.6"
   }
 }
