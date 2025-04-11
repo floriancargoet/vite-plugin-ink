@@ -24,12 +24,13 @@
       }
     },
     "./global": {
-      "types": "./ink.d.ts"
+      "types": "./global.d.ts"
     }
   },
   "files": [
     "dist",
-    "ink.d.ts"
+    "global.d.ts",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "rm -rf dist; tsc",
