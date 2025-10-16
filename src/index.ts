@@ -2,24 +2,33 @@ import path from "node:path";
 import fs from "node:fs";
 import EventEmitter from "node:events";
 
-import type { PluginOption } from "vite";
+import {ModuleNode, PluginOption} from "vite";
 import { CompilerOptions } from "inkjs/compiler/CompilerOptions";
 import { Compiler } from "inkjs/compiler/Compiler";
+import {IFileHandler} from "inkjs/compiler/IFileHandler";
 
 class Tracker {
   // Track dependencies of main ink files for hot reloading
   // dependency file => main file
-  filesToTrack = new Map<string, string>();
+  filesToTrack = new Map<string, Set<string>>();
 
   /** Track a new file linked to the main file. */
   track(main: string, toTrack: string) {
-    this.filesToTrack.set(toTrack, main);
+    const includedFrom = this.filesToTrack.get(toTrack) ?? new Set<string>();
+    if (!includedFrom.has(main)) {
+      includedFrom.add(main);
+    }
   }
 
   /** Stop tracking all files linked to this main file. */
   clear(main: string) {
-    for (const [trackedDep, linkedMain] of this.filesToTrack) {
-      if (linkedMain === main) {
+    for (const [trackedDep, linkedMains] of this.filesToTrack) {
+      if (linkedMains.has(main)) {
+        if (linkedMains.size === 1) {
+          this.filesToTrack.delete(trackedDep);
+        } else {
+          linkedMains.delete(trackedDep);
+        }
         this.filesToTrack.delete(trackedDep);
       }
     }
@@ -28,8 +37,8 @@ class Tracker {
   /** Get the main file linked to the given file.
    * @returns The main file or undefined if not tracked.
    */
-  getTrackedMain(maybeTracked: string): string | void {
-    return this.filesToTrack.get(maybeTracked);
+  getTrackedMains(maybeTracked: string): ReadonlySet<string> {
+    return this.filesToTrack.get(maybeTracked) ?? new Set<string>();
   }
 }
 
@@ -39,16 +48,42 @@ type TemplateEngine = Record<
   string,
   (fileName: string, source: string) => string
 >;
+type Matchable = {[Symbol.match]: (text: string) => RegExpMatchArray|null};
+type FileNamePatternTester = (fileName: string) => boolean;
+type TestFileNamePattern = string|string[]|Matchable|FileNamePatternTester;
 type Options = {
+  inkFileNamePattern?: TestFileNamePattern
   templateEngine?: TemplateEngine;
+  testHarness?: string;
+  testFileNamePattern?: TestFileNamePattern;
 };
+
+function convertToFileNamePatternTester(pattern: TestFileNamePattern|undefined): FileNamePatternTester {
+    if (typeof pattern === 'function') {
+        return pattern;
+    } else if (typeof pattern === 'undefined') {
+        return () => false;
+    } else if (typeof pattern === 'string') {
+        return (fileName: string) => fileName.endsWith(pattern);
+    } else if (Array.isArray(pattern)) {
+        if (pattern.length === 1) {
+            return convertToFileNamePatternTester(pattern[0])
+        }
+        return (fileName: string) => pattern.some(suffix => fileName.endsWith(suffix));
+    } else {
+        return (fileName: string) => fileName.match(pattern) !== null;
+    }
+}
+
 // The Vite plugin
 export function ink(options: Options = {}): PluginOption {
+  const isInkFile: FileNamePatternTester = convertToFileNamePatternTester(options.inkFileNamePattern ?? ".ink")
+  const isTestFile: FileNamePatternTester = convertToFileNamePatternTester(options.testFileNamePattern)
   return {
     name: "vite-plugin-ink",
     // Transform imported ink files into JS modules that export an instance of Story.
-    transform(source, fileName) {
-      if (fileName.endsWith(".ink")) {
+    transform(this: Reporter, source, fileName) {
+      if (isInkFile(fileName)) {
         const storyJSON = compileInkToJSONString(
           fileName,
           this,
@@ -56,23 +91,28 @@ export function ink(options: Options = {}): PluginOption {
           options.templateEngine
         );
         if (!storyJSON) return;
-        return generateStoryModule(storyJSON);
+        return generateStoryModule(storyJSON, (isTestFile(fileName) ? options.testHarness : null) ?? "");
       }
     },
 
-    // When any .ink is modified, trigger a hot reload update on the generated JS module for the main ink file.
-    handleHotUpdate({ file, server }) {
-      const mainInkToReload = inkTracker.getTrackedMain(file);
-      if (mainInkToReload) {
+    // When any .ink is modified, trigger a hot reload update on the generated JS module for the main ink files that
+    // include it.
+    handleHotUpdate(this: void, { file, server }) {
+      const mainInkToReload = inkTracker.getTrackedMains(file);
+      const modulesToReload = new Set<ModuleNode>()
+      for (const mainInk of mainInkToReload) {
         const jsModulesToReload =
-          server.moduleGraph.getModulesByFile(mainInkToReload) ?? [];
-        return Array.from(jsModulesToReload);
+          server.moduleGraph.getModulesByFile(mainInk) ?? [];
+        for (const module of jsModulesToReload) {
+          modulesToReload.add(module)
+        }
       }
+      return Array.from(modulesToReload)
     },
   };
 }
 
-function generateStoryModule(storyData: string) {
+function generateStoryModule(storyData: string, testHarness: string) {
   return `import { Story } from "inkjs/engine/Story";
 const story = new Story(${storyData});
 
@@ -101,6 +141,7 @@ if (import.meta.hot) {
     }
   })
 }
+${testHarness}
 `;
 }
 
@@ -139,7 +180,7 @@ function compileInkToJSONString(
   return new Compiler(mainInk, compilerOptions).Compile().ToJson();
 }
 
-class InkFileHandler extends EventEmitter {
+class InkFileHandler extends EventEmitter implements IFileHandler {
   mainFilePath: string;
   rootPath: string;
   templateEngine: TemplateEngine;
