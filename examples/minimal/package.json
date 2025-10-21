@@ -12,6 +12,6 @@
   },
   "devDependencies": {
     "inkjs": "2.3.2",
-    "vite": "6.3.6"
+    "vite": "7.1.11"
   }
 }

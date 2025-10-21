@@ -44,7 +44,7 @@
   "devDependencies": {
     "@types/node": "22.14.0",
     "inkjs": "2.3.2",
-    "typescript": "5.8.3",
-    "vite": "6.4.1"
+    "typescript": "5.9.3",
+    "vite": "7.1.11"
   }
 }
