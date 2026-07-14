@@ -42,9 +42,9 @@
     "inkjs": "2.3.2"
   },
   "devDependencies": {
-    "@types/node": "22.14.0",
+    "@types/node": "26.1.1",
     "inkjs": "2.3.2",
     "typescript": "5.9.3",
-    "vite": "7.1.11"
+    "vite": "8.1.4"
   }
 }
