@@ -46,6 +46,14 @@ type Options = {
 export function ink(options: Options = {}): PluginOption {
   return {
     name: "vite-plugin-ink",
+    config() {
+      return {
+        // Without this, vite dev discovers the client dependency too late and it can fail
+        optimizeDeps: {
+          include: ["inkjs/engine/Story"],
+        },
+      };
+    },
     // Transform imported ink files into JS modules that export an instance of Story.
     transform(source, fileName) {
       if (fileName.endsWith(".ink")) {
@@ -53,7 +61,7 @@ export function ink(options: Options = {}): PluginOption {
           fileName,
           this,
           inkTracker,
-          options.templateEngine
+          options.templateEngine,
         );
         if (!storyJSON) return;
         return generateStoryModule(storyJSON);
@@ -116,7 +124,7 @@ function compileInkToJSONString(
   inkPath: string,
   reporter: Reporter,
   tracker: Tracker,
-  templateEngine?: TemplateEngine
+  templateEngine?: TemplateEngine,
 ) {
   // Remove all tracked files so that we don't keep old dependencies.
   tracker.clear(inkPath);
@@ -132,7 +140,7 @@ function compileInkToJSONString(
     undefined,
     undefined,
     (message, type) => reporter[logTypes[type]](message),
-    fileHandler
+    fileHandler,
   );
 
   // …and compile to JSON.

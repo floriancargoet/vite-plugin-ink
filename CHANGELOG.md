@@ -2,6 +2,12 @@
 
 - Nothing yet.
 
+## 0.3.5 - 2026-07-28
+
+### Fixed
+
+- tell vite to optimize ink import
+
 ## 0.3.4 - 2026-07-28
 
 ### Changed
