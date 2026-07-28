@@ -39,13 +39,16 @@
     "postversion": "if [ \"$NO_GIT\" != 1 ]; then git push && git push --tags ; fi"
   },
   "peerDependencies": {
-    "inkjs": "2.3.2"
+    "inkjs": "2.3.2 || 2.4.0"
   },
   "devDependencies": {
     "@types/node": "26.1.2",
-    "inkjs": "2.3.2",
+    "inkjs": "2.4.0",
     "typescript7": "npm:typescript@7.0.2",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "vite": "8.1.5"
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": true
   }
 }

@@ -2,6 +2,10 @@
 
 - Nothing yet.
 
+### Changed
+
+- updated deps
+
 ## 0.3.3 - 2025-04-11
 
 Start of the changelog.

@@ -11,7 +11,10 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "inkjs": "2.3.2",
-    "vite": "8.1.4"
+    "inkjs": "2.4.0",
+    "vite": "8.1.5"
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": true
   }
 }

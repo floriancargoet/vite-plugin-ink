@@ -12,7 +12,8 @@
     "declaration": true,
 
     /* Linting */
-    "strict": true
+    "strict": true,
+    "rootDir": "./src"
   },
   "include": ["src"]
 }
