@@ -2,6 +2,8 @@
 
 - Nothing yet.
 
+## 0.3.4 - 2026-07-28
+
 ### Changed
 
 - updated deps
