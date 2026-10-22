@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "inkjs": "2.4.0",
-    "vite": "8.1.5"
+    "vite": "8.1.6"
   },
   "allowScripts": {
     "fsevents@2.3.3": true
